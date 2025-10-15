@@ -1,0 +1,29 @@
+/* 1. Adicione a linha de importação da fonte aqui no topo */
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --background: #EFF1FB;
+  --foreground: #C0C9EE;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #898AC4;
+    --foreground: #EFF1FB;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Kumbh Sans', sans-serif;
+}
