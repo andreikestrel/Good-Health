@@ -25,8 +25,8 @@ const USERS_KEY = "boasaude.auth.users";
 
 const BUILTIN_USERS: Array<{ name: string; email: string; password: string; role: UserRole }> = [
   { name: "Paciente", email: "paciente@email.com", password: "paciente123", role: "paciente" },
-  { name: "Profissional", email: "profissional@email.com", password: "profissional123", role: "profissional" },
-  { name: "Administrador", email: "admin@email.com", password: "admin123", role: "admin" },
+  { name: "Dr Stephen Strange", email: "profissional@email.com", password: "profissional123", role: "profissional" },
+  { name: "Wilson Fisk", email: "admin@email.com", password: "admin123", role: "admin" },
 ];
 
 function loadUsersFromStorage(): Array<{ name: string; email: string; password: string; role: UserRole }> {

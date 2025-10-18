@@ -30,8 +30,8 @@ export default function PatientDetailsPage() {
           <div className="text-xs text-black/70">{patient.address || ""}</div>
         </div>
         <div className="flex gap-3">
-          <Button variant="secondary">receitas</Button>
-          <Button variant="secondary">requisições</Button>
+          <Button variant="secondary" onClick={() => router.push(`/patients/recipes?patientId=${patient.id}`)}>receitas</Button>
+          <Button variant="secondary" onClick={() => router.push(`/patients/requisition?patientId=${patient.id}`)}>requisições</Button>
         </div>
         <div className="grid gap-2">
           <div className="text-sm">Ultimos atendimentos</div>

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +30,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen grid place-items-center p-6">
       <div className="w-full max-w-sm rounded-3xl bg-[#C0C9EE] p-8 grid gap-8">
-        <div className="aspect-square rounded-lg bg-white/70 grid place-items-center text-black/60">LOGO</div>
+        <div className="grid place-items-center">
+          <Image src="/Health.svg" alt="Boa Saúde" width={120} height={120} priority />
+        </div>
         <form onSubmit={onSubmit} className="grid gap-4">
           <Input
             label="Usuario / email"
@@ -52,7 +55,15 @@ export default function LoginPage() {
             Entrar
           </Button>
         </form>
-        <button className="text-center text-sm opacity-80" onClick={() => setOpen(true)}>
+        <div className="rounded-xl bg-white/80 text-black text-xs p-3">
+          <div className="font-medium mb-1">Usuarios para teste</div>
+          <div>paciente@email.com / paciente123</div>
+          <div>profissional@email.com / profissional123</div>
+          <div>admin@email.com / admin123</div>
+          
+          <div> Desenvolvido por Andrei Barbosa RU: 4529136</div>
+        </div>
+        <button className="text-center text-sm opacity-80" onClick={() => router.push('/login/alert')}>
           NOVO USUARIO
         </button>
       </div>
@@ -61,7 +72,6 @@ export default function LoginPage() {
         <div className="grid gap-4">
           <Button full onClick={() => router.push("/login/newUser?role=profissional")}>Sou profissional</Button>
           <Button full onClick={() => router.push("/login/newUser?role=admin")}>Sou administrador</Button>
-          <Button full onClick={() => router.push("/login/newUser?role=paciente")}>Sou paciente</Button>
         </div>
       </Modal>
     </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getPatient, savePatient, type Sex } from "@/lib/data/store";
+import { isValidCPF, lookupCEP, maskCPF, maskCEP, maskPhone } from "@/lib/utils/validators";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
@@ -27,8 +28,24 @@ export default function PatientFormPage() {
 
   useEffect(() => { if (!isAuthenticated) router.replace("/login"); }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const data = await lookupCEP(cep);
+      if (active && data) {
+        setUf(data.uf || uf);
+        setAddress(data.address || address);
+      }
+    })();
+    return () => { active = false; };
+  }, [cep]);
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (cpf && !isValidCPF(cpf)) {
+      alert("CPF inválido");
+      return;
+    }
     const saved = savePatient({ id, name, cpf, email, phone, birthDate: birth, sex, cep, uf, address, complement });
     router.replace(`/patients/details?id=${saved.id}`);
   }
@@ -36,33 +53,31 @@ export default function PatientFormPage() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="min-h-screen grid place-items-center p-6">
-      <div className="w-full max-w-md rounded-3xl bg-[#C0C9EE] p-6 grid gap-3">
+    <div className="min-h-screen p-6 container-responsive">
+      <div className="mx-auto w-full max-w-2xl rounded-3xl bg-[#C0C9EE] p-6 grid gap-3">
         <h1 className="text-lg">{id ? "Editar paciente" : "Novo paciente"}</h1>
         <form onSubmit={onSubmit} className="grid gap-3">
-          <Input label="Nome completo" value={name} onChange={(e) => setName(e.target.value)} />
-          <Input label="CPF" value={cpf} onChange={(e) => setCpf(e.target.value)} />
-          <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Input label="Telefone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          <div className="grid grid-cols-3 gap-3">
+          <Input label="Nome completo" value={name} onChange={(e) => setName(e.target.value)} required />
+          <Input label="CPF" placeholder="000.000.000-00" value={cpf} onChange={(e) => setCpf(maskCPF(e.target.value))} required />
+          <Input label="Email" type="email" placeholder="nome@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Input label="Telefone" placeholder="(00) 00000-0000" value={phone} onChange={(e) => setPhone(maskPhone(e.target.value))} required />
+          <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
             <Input label="Data de nascimento" type="date" value={birth} onChange={(e) => setBirth(e.target.value)} />
-            <label className="grid gap-2 text-sm">
+            <label className="grid gap-2 text-sm min-w-[140px]">
               <span>Sexo</span>
-              <select className="h-11 rounded-[10px] bg-white/80 px-3 text-black" value={sex} onChange={(e) => setSex(e.target.value as Sex)}>
+              <select className="h-11 rounded-[10px] bg-white/80 px-3 text-black w-full" value={sex} onChange={(e) => setSex(e.target.value as Sex)} required>
                 <option value="M">Masculino</option>
                 <option value="F">Feminino</option>
                 <option value="O">Outro</option>
               </select>
             </label>
-            <div />
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <Input label="CEP" value={cep} onChange={(e) => setCep(e.target.value)} />
-            <Input label="UF" value={uf} onChange={(e) => setUf(e.target.value)} />
-            <div />
+          <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
+            <Input label="CEP" placeholder="00000-000" value={cep} onChange={(e) => setCep(maskCEP(e.target.value))} />
+            <Input label="UF" placeholder="UF" value={uf} onChange={(e) => setUf(e.target.value.toUpperCase().slice(0,2))} maxLength={2} className="w-20 text-center uppercase tracking-widest" />
           </div>
-          <Input label="Endereço" value={address} onChange={(e) => setAddress(e.target.value)} />
-          <Input label="Complemento" value={complement} onChange={(e) => setComplement(e.target.value)} />
+          <Input label="Endereço" placeholder="Rua, bairro - cidade" value={address} onChange={(e) => setAddress(e.target.value)} required />
+          <Input label="Complemento" placeholder="Apto, bloco..." value={complement} onChange={(e) => setComplement(e.target.value)} />
           <Button type="submit" full>Salvar</Button>
         </form>
         <button className="text-sm opacity-80" onClick={() => router.back()}>Voltar</button>

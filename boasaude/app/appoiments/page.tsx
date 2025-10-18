@@ -29,8 +29,8 @@ export default function AppointmentsListPage() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="mx-auto max-w-md">
+    <div className="min-h-screen p-4 container-responsive">
+      <div className="mx-auto max-w-2xl">
         <div className="rounded-2xl bg-[#898AC4] p-4 text-white flex items-center justify-between">
           <div>USUARIO</div>
           <div className="text-right text-xs opacity-80">{new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}<br/>{new Date().toLocaleDateString("pt-BR")}</div>
@@ -45,13 +45,19 @@ export default function AppointmentsListPage() {
         <div className="mt-4 rounded-2xl bg-[#C0C9EE] p-4 grid gap-3">
           {appointments.map((a) => (
             <Card key={a.id}>
-              <div className="text-black flex items-center justify-between">
-                <div>
-                  <div className="font-medium">{patientName(a.patientId)}</div>
+              <div className="text-black grid gap-2 md:flex md:items-center md:justify-between md:gap-3">
+                <div className="min-w-[200px]">
+                  <div className="font-medium flex items-center gap-2">
+                    {patientName(a.patientId)}
+                    {a.video && <span className="text-xs bg-[#5B5FD9] text-white rounded-full px-2 py-0.5">Vídeo</span>}
+                  </div>
                   <div className="text-xs text-black/60">{new Date(a.datetime).toLocaleString("pt-BR")}</div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap md:flex-nowrap md:justify-end">
                   <Button variant="secondary" onClick={() => router.push(`/patients/details?id=${a.patientId}`)}>ver paciente</Button>
+                  {a.video && (
+                    <Button onClick={() => router.push('/videocall')}>Simular videoconsulta</Button>
+                  )}
                   {user?.role !== "paciente" && (
                     <>
                       <Button variant="secondary" onClick={() => router.push(`/appoiments/create_n_edit?id=${a.id}`)}>editar</Button>
