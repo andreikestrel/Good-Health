@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { listRequisitions, listRequisitionsByPatient, listPatients } from "@/lib/data/store";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
-export default function RequisitionListPage() {
+function RequisitionListPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -50,6 +50,14 @@ export default function RequisitionListPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RequisitionListPage() {
+  return (
+    <Suspense fallback={null}>
+      <RequisitionListPageInner />
+    </Suspense>
   );
 }
 

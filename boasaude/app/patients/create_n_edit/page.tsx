@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getPatient, savePatient, type Sex } from "@/lib/data/store";
@@ -8,7 +8,7 @@ import { isValidCPF, lookupCEP, maskCPF, maskCEP, maskPhone } from "@/lib/utils/
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
-export default function PatientFormPage() {
+function PatientFormPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -83,6 +83,14 @@ export default function PatientFormPage() {
         <button className="text-sm opacity-80" onClick={() => router.back()}>Voltar</button>
       </div>
     </div>
+  );
+}
+
+export default function PatientFormPage() {
+  return (
+    <Suspense fallback={null}>
+      <PatientFormPageInner />
+    </Suspense>
   );
 }
 

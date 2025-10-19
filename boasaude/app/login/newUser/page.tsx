@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { Suspense, useMemo, useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, UserRole } from "@/lib/auth/AuthContext";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { isValidCPF, lookupCEP, maskCPF, maskCEP, maskPhone } from "@/lib/utils/validators";
 
-export default function NewUserPage() {
+function NewUserPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { register } = useAuth();
@@ -114,6 +114,14 @@ export default function NewUserPage() {
         <button className="text-sm opacity-80" onClick={() => router.back()}>Voltar</button>
       </div>
     </div>
+  );
+}
+
+export default function NewUserPage() {
+  return (
+    <Suspense fallback={null}>
+      <NewUserPageInner />
+    </Suspense>
   );
 }
 

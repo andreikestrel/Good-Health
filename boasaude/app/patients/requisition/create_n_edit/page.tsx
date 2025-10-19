@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getRequisition, listPatients, saveRequisition } from "@/lib/data/store";
@@ -8,7 +8,7 @@ import { Autocomplete } from "@/components/ui/Autocomplete";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 
-export default function RequisitionFormPage() {
+function RequisitionFormPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -48,6 +48,14 @@ export default function RequisitionFormPage() {
         <button className="text-sm opacity-80" onClick={() => router.back()}>Voltar</button>
       </div>
     </div>
+  );
+}
+
+export default function RequisitionFormPage() {
+  return (
+    <Suspense fallback={null}>
+      <RequisitionFormPageInner />
+    </Suspense>
   );
 }
 

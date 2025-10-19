@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { Suspense, useEffect, useMemo } from "react";
 // dynamic title handled client-side since this is a client component
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -8,7 +8,7 @@ import { getPatient, listAppointmentsByPatient } from "@/lib/data/store";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
-export default function PatientDetailsPage() {
+function PatientDetailsPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -61,6 +61,14 @@ export default function PatientDetailsPage() {
         <button className="text-sm opacity-80" onClick={() => router.back()}>Voltar</button>
       </div>
     </div>
+  );
+}
+
+export default function PatientDetailsPage() {
+  return (
+    <Suspense fallback={null}>
+      <PatientDetailsPageInner />
+    </Suspense>
   );
 }
 
