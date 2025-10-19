@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -10,7 +10,7 @@ import { CiVolumeHigh } from "react-icons/ci";
 import { FaMicrophoneLines, FaMicrophoneLinesSlash } from "react-icons/fa6";
 import { listAppointments, listPatients } from "@/lib/data/store";
 
-export default function VideoCallPage() {
+function VideoCallPageInner() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const params = useSearchParams();
@@ -48,7 +48,7 @@ export default function VideoCallPage() {
           <div className="rounded-xl bg-white/80 p-3 text-black/80 text-center">
             {(() => {
               try {
-                const doctorFromQuery = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('doctor') : null;
+                const doctorFromQuery = typeof window !== 'undefined' ? (new URL(document.URL).searchParams.get('doctor')) : null;
                 const uRaw = typeof window !== 'undefined' ? window.localStorage.getItem('boasaude.auth.user') : null;
                 const u = uRaw ? JSON.parse(uRaw) : null;
                 if (!u) return 'VideoConsulta';
@@ -95,6 +95,14 @@ export default function VideoCallPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VideoCallPage() {
+  return (
+    <Suspense fallback={null}>
+      <VideoCallPageInner />
+    </Suspense>
   );
 }
 
