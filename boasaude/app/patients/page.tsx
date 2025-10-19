@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { listPatients, deletePatient, ensureSeed, type Patient } from "@/lib/data/store";
 import { Button } from "@/components/ui/Button";
+import { FaTrash } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 import { Card } from "@/components/ui/Card";
+import { Modal } from "@/components/ui/Modal";
 
 export default function PatientsListPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const [version, setVersion] = useState(0);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => { ensureSeed(); }, []);
   useEffect(() => { if (!isAuthenticated) router.replace("/login"); }, [isAuthenticated, router]);
@@ -31,10 +35,15 @@ export default function PatientsListPage() {
     return "•";
   }
 
-  function onDelete(id: string) {
-    deletePatient(id);
-    setVersion((v) => v + 1);
-  }
+function onDelete(id: string) {
+  setDeleteId(id);
+}
+function confirmDelete() {
+  if (!deleteId) return;
+  deletePatient(deleteId);
+  setDeleteId(null);
+  setVersion((v) => v + 1);
+}
 
   if (!isAuthenticated) return null;
 
@@ -65,8 +74,22 @@ export default function PatientsListPage() {
                 <Button variant="secondary" onClick={() => router.push(`/patients/details?id=${p.id}`)}>ver paciente</Button>
                 {user?.role !== "paciente" && (
                   <>
-                    <Button variant="secondary" onClick={() => router.push(`/patients/create_n_edit?id=${p.id}`)}>editar</Button>
-                    <Button variant="ghost" onClick={() => onDelete(p.id)}>excluir</Button>
+                    <Button
+                      variant="icon"
+                      className="transition-transform hover:scale-105"
+                      onClick={() => router.push(`/patients/create_n_edit?id=${p.id}`)}
+                      aria-label="Editar"
+                    >
+                      <MdEdit />
+                    </Button>
+                    <Button
+                      variant="icon"
+                      className="transition-transform hover:scale-105"
+                      onClick={() => onDelete(p.id)}
+                      aria-label="Excluir"
+                    >
+                      <FaTrash color="#EF4444" />
+                    </Button>
                   </>
                 )}
               </div>
@@ -77,6 +100,15 @@ export default function PatientsListPage() {
           )}
         </div>
       </div>
+      <Modal open={!!deleteId} onClose={() => setDeleteId(null)}>
+        <div className="grid gap-4 text-black">
+          <div className="text-sm">Você tem certeza que deseja excluir?</div>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setDeleteId(null)}>Não</Button>
+            <Button onClick={confirmDelete}>Sim</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

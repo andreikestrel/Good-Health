@@ -24,8 +24,8 @@ export default function RecipesListPage() {
   }
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="mx-auto max-w-md">
+    <div className="min-h-screen p-4 container-responsive">
+      <div className="mx-auto max-w-2xl">
         <div className="rounded-2xl bg-[#898AC4] p-4 text-white flex items-center justify-between">
           <div>Receitas</div>
           <div className="flex gap-2">

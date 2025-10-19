@@ -42,12 +42,4 @@ body {
 }
 
 /* Videocall responsive box */
-.video-box {
-  width: 100%;
-  aspect-ratio: 9 / 16;
-}
-@media (min-width: 768px) {
-  .video-box {
-    aspect-ratio: 16 / 9;
-  }
-}
+.video-box { width: 100%; aspect-ratio: 9 / 16; }

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Boa Saúde",
+  title: "Good Health - Gerenciamento de saúde",
   description: "Boa Saúde - Gerenciamento de saúde",
   icons: {
     icon: "/Health.svg",

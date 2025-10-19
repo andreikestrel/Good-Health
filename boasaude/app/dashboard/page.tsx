@@ -96,11 +96,12 @@ function AppointmentsList() {
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   React.useEffect(() => {
     if (!isAuthenticated) router.replace("/login");
-  }, [isAuthenticated, router]);
+    else if (user?.role === 'paciente') router.replace('/dashboardPatient');
+  }, [isAuthenticated, user?.role, router]);
 
   if (!isAuthenticated) return null;
 

@@ -108,7 +108,6 @@ export default function NewUserPage() {
           </div>
           <Input label="Endereço" placeholder="Rua, bairro - cidade" value={address} onChange={(e) => setAddress(e.target.value)} />
           <Input label="Complemento" />
-          {/* Role selecionada previamente via query (alert) */}
           {message && <p className="text-sm text-black/70">{message}</p>}
           <Button type="submit" full disabled={disabled}>Cadastrar</Button>
         </form>

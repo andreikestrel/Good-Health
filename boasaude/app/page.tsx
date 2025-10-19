@@ -10,10 +10,13 @@ import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => { ensureSeed(); }, []);
-  useEffect(() => { if (!isAuthenticated) router.replace("/login"); }, [isAuthenticated, router]);
+  useEffect(() => {
+    if (!isAuthenticated) router.replace("/login");
+    else if (user?.role === "paciente") router.replace("/dashboardPatient");
+  }, [isAuthenticated, user?.role, router]);
   const appointments = useMemo(() => listAppointments().slice(0, 10), []);
   const patients = useMemo(() => listPatients(), []);
   if (!isAuthenticated) return null;
@@ -27,6 +30,7 @@ export default function Home() {
           <div className="flex gap-2">
             <Button variant="secondary" onClick={() => router.push("/appoiments/create_n_edit")}>Novo agendamento</Button>
             <Button variant="secondary" onClick={() => router.push("/appoiments")}>Ver todos</Button>
+            <Button variant="secondary" onClick={() => { logout(); router.replace('/login'); }}>Sair</Button>
           </div>
         </div>
 

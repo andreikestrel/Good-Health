@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
+// dynamic title handled client-side since this is a client component
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getPatient, listAppointmentsByPatient } from "@/lib/data/store";
@@ -20,6 +21,12 @@ export default function PatientDetailsPage() {
   }, [isAuthenticated, router]);
   if (!isAuthenticated) return null;
   if (!patient) return <div className="p-6">Paciente não encontrado</div>;
+
+  React.useEffect(() => {
+    if (patient?.name) {
+      document.title = `Good Health - ${patient.name}`;
+    }
+  }, [patient?.name]);
 
   return (
     <div className="min-h-screen grid place-items-center p-6">

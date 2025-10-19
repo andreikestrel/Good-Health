@@ -82,6 +82,8 @@ export default function ReportPage() {
     win.document.write(`<html><head><title>Relatório</title><style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background: #EFF1FB; }
       .card { background: #C0C9EE; border-radius: 16px; padding: 16px; }
+      button, .print-hidden, .no-print { display: none !important; }
+      input, select, textarea { display: none !important; }
     </style></head><body>${node.innerHTML}</body></html>`);
     win.document.close();
     win.focus();

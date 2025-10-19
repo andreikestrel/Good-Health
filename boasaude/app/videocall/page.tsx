@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { IoChatboxEllipses } from "react-icons/io5";
@@ -13,16 +13,25 @@ import { listAppointments, listPatients } from "@/lib/data/store";
 export default function VideoCallPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
+  const params = useSearchParams();
+  const apptId = params.get("id") || "";
   const [showChat, setShowChat] = React.useState(false);
   const [muted, setMuted] = React.useState(false);
   const [volume, setVolume] = React.useState(70);
   const [showVolume, setShowVolume] = React.useState(false);
   const volumeRef = React.useRef<HTMLInputElement | null>(null);
 
-  // Try to infer latest appointment to decide header text
-  const latest = React.useMemo(() => listAppointments()[0], []);
+  // Get selected appointment (by id) or fallback to latest
+  const latest = React.useMemo(() => {
+    const all = listAppointments();
+    return apptId ? all.find(a => a.id === apptId) || all[0] : all[0];
+  }, [apptId]);
   const patients = React.useMemo(() => listPatients(), []);
   const patientName = latest ? (patients.find(p => p.id === latest.patientId)?.name || "Paciente") : "Paciente";
+  const patientSex = React.useMemo(() => {
+    const p = latest ? patients.find(px => px.id === latest.patientId) : undefined;
+    return p?.sex || "F";
+  }, [latest, patients]);
   const senderDisplayName = user?.role === "paciente" ? patientName : (user?.name || "Profissional");
 
   React.useEffect(() => { if (!isAuthenticated) router.replace("/login"); }, [isAuthenticated, router]);
@@ -35,25 +44,26 @@ export default function VideoCallPage() {
           <div>VideoConsulta</div>
           <Button variant="secondary" onClick={() => router.back()}>Voltar</Button>
         </div>
-        <div className="rounded-2xl bg-[#C0C9EE] p-4 grid gap-4">
+          <div className="rounded-2xl bg-[#C0C9EE] p-4 grid gap-4">
           <div className="rounded-xl bg-white/80 p-3 text-black/80 text-center">
             {typeof window !== 'undefined' && (() => {
               try {
                 const u = JSON.parse(window.localStorage.getItem('boasaude.auth.user') || 'null');
+                const doctorFromQuery = new URLSearchParams(window.location.search).get('doctor');
                 if (!u) return 'VideoConsulta';
                 if (u.role === 'profissional' || u.role === 'admin') return `Paciente - ${patientName}`;
-                return u.role === 'paciente' ? (latest?.professionalName || 'Profissional') : 'VideoConsulta';
+                return u.role === 'paciente' ? (doctorFromQuery || latest?.professionalName || 'Profissional') : 'VideoConsulta';
               } catch { return 'VideoConsulta'; }
             })()}
           </div>
           <div className="relative w-full rounded-xl overflow-hidden bg-black/10 video-box">
             <Image src={(() => {
-              // Determinar imagem APENAS pelo papel: paciente vê médico; prof/admin vê paciente feminino por padrão
+              // Determinar imagem pelo papel/sexo
               if (typeof window !== 'undefined') {
                 try {
                   const u = JSON.parse(window.localStorage.getItem('boasaude.auth.user') || 'null');
                   if (u?.role === 'paciente') return '/medicoatendimento.png';
-                  return '/pacienteFeminino.png';
+                  return patientSex === 'M' ? '/pacienteMasculino.png' : '/pacienteFeminino.png';
                 } catch { /* ignore */ }
               }
               return '/medicoatendimento.png';

@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { listAppointments, listPatients, deleteAppointment, ensureSeed } from "@/lib/data/store";
 import { Button } from "@/components/ui/Button";
+import { FaTrash } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 import { Card } from "@/components/ui/Card";
+import { Modal } from "@/components/ui/Modal";
 
 export default function AppointmentsListPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const [version, setVersion] = useState(0);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => { ensureSeed(); }, []);
   useEffect(() => { if (!isAuthenticated) router.replace("/login"); }, [isAuthenticated, router]);
@@ -21,10 +25,13 @@ export default function AppointmentsListPage() {
     return patients.find((p) => p.id === id)?.name || "Desconhecido";
   }
 
-  function onDelete(id: string) {
-    deleteAppointment(id);
-    setVersion((v) => v + 1);
-  }
+function onDelete(id: string) { setDeleteId(id); }
+function confirmDelete() {
+  if (!deleteId) return;
+  deleteAppointment(deleteId);
+  setDeleteId(null);
+  setVersion((v) => v + 1);
+}
 
   if (!isAuthenticated) return null;
 
@@ -56,12 +63,26 @@ export default function AppointmentsListPage() {
                 <div className="flex gap-2 flex-wrap md:flex-nowrap md:justify-end">
                   <Button variant="secondary" onClick={() => router.push(`/patients/details?id=${a.patientId}`)}>ver paciente</Button>
                   {a.video && (
-                    <Button onClick={() => router.push('/videocall')}>Simular videoconsulta</Button>
+                    <Button onClick={() => router.push(`/videocall?id=${a.id}`)}>Simular</Button>
                   )}
                   {user?.role !== "paciente" && (
                     <>
-                      <Button variant="secondary" onClick={() => router.push(`/appoiments/create_n_edit?id=${a.id}`)}>editar</Button>
-                      <Button variant="ghost" onClick={() => onDelete(a.id)}>excluir</Button>
+                      <Button
+                        variant="icon"
+                        className="transition-transform hover:scale-105"
+                        onClick={() => router.push(`/appoiments/create_n_edit?id=${a.id}`)}
+                        aria-label="Editar"
+                      >
+                        <MdEdit />
+                      </Button>
+                      <Button
+                        variant="icon"
+                        className="transition-transform hover:scale-105"
+                        onClick={() => onDelete(a.id)}
+                        aria-label="Excluir"
+                      >
+                        <FaTrash color="#EF4444" />
+                      </Button>
                     </>
                   )}
                 </div>
@@ -71,6 +92,15 @@ export default function AppointmentsListPage() {
           {appointments.length === 0 && <div className="text-center text-black/60">Nenhum agendamento</div>}
         </div>
       </div>
+      <Modal open={!!deleteId} onClose={() => setDeleteId(null)}>
+        <div className="grid gap-4 text-black">
+          <div className="text-sm">Você tem certeza que deseja excluir?</div>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setDeleteId(null)}>Não</Button>
+            <Button onClick={confirmDelete}>Sim</Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

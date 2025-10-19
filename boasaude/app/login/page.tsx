@@ -17,14 +17,17 @@ export default function LoginPage() {
   const [open, setOpen] = useState(false);
 
   React.useEffect(() => {
-    if (isAuthenticated) router.replace("/dashboard");
-  }, [isAuthenticated, router]);
+    if (isAuthenticated) {
+      const dest = user?.role === "paciente" ? "/dashboardPatient" : "/dashboard";
+      router.replace(dest);
+    }
+  }, [isAuthenticated, user?.role, router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const result = await login(email, password);
     if (!result.ok) setError(result.message || "Erro ao entrar");
-    else router.replace("/dashboard");
+    // redirecionamento acontece pelo useEffect acima quando isAuthenticated=true
   }
 
   return (
@@ -55,14 +58,32 @@ export default function LoginPage() {
             Entrar
           </Button>
         </form>
-        <div className="rounded-xl bg-white/80 text-black text-xs p-3">
-          <div className="font-medium mb-1">Usuarios para teste</div>
-          <div>paciente@email.com / paciente123</div>
-          <div>profissional@email.com / profissional123</div>
-          <div>admin@email.com / admin123</div>
-          
-          <div> Desenvolvido por Andrei Barbosa RU: 4529136</div>
-        </div>
+        <div className="rounded-xl bg-white/80 text-black text-xs p-3 space-y-2">
+  <div className="font-semibold text-center text-sm mb-2">
+    Usuários para teste
+  </div>
+  <div className="grid gap-1 text-center">
+    <div><span className="font-medium">Paciente:</span> paciente@email.com / paciente123</div>
+    <div><span className="font-medium">Profissional:</span> profissional@email.com / profissional123</div>
+    <div><span className="font-medium">Admin:</span> admin@email.com / admin123</div>
+  </div>
+
+  <div className="border-t border-black/10 pt-2 text-center text-[10px] leading-tight">
+    SGHSS (Sistema de Gestão Hospitalar e de Serviços de Saúde) - Projeto Multidisciplinar
+    <br/>
+    Desenvolvido por <span className="font-medium">Andrei Barbosa</span><br />
+    RU: 4529136<br />
+    <a
+      href="https://github.com/andreikestrel/Good-Health"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline break-all"
+    >
+      Repositório github
+    </a>
+  </div>
+</div>
+
         <button className="text-center text-sm opacity-80" onClick={() => router.push('/login/alert')}>
           NOVO USUARIO
         </button>

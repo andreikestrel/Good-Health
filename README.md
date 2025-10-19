@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+SGHSS - Sistema de Gestão Hospitalar e de Serviços de Saúde
+Projeto Multidisciplinar – ADS
 
-## Getting Started
+Aplicação web mobile‑first construída com Next.js (App Router), simulando um prontuário/gestão básica de pacientes, atendimentos, receitas e requisições. Sem backend real: usa localStorage para persistência e simulação de autenticação e dados.
 
-First, run the development server:
-
+Como rodar
+1) Requisitos: Node 18+ e npm
+2) Instalar dependências:
+```bash
+cd boasaude
+npm install
+```
+3) Rodar em dev:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+4) Abrir: http://localhost:3000
+
+Logins de teste
+- Paciente: paciente@email.com / paciente123
+- Profissional: profissional@email.com / profissional123
+- Admin: admin@email.com / admin123
+
+Estrutura (tree simplificada)
+```
+app/
+  page.tsx                 # Home (últimos atendimentos)
+  layout.tsx               # Layout + AuthProvider
+  dashboard/               # Dashboard (admin/profissional)
+  dashboardPatient/        # Dashboard do paciente (estático)
+  login/
+    page.tsx               # Login + dicas de credenciais
+    alert/                 # Solicitação/Simulação de novo usuário
+    newUser/               # Cadastro com validação forte de senha
+  appoiments/              # Lista e create/edit de agendamentos
+  patients/
+    page.tsx               # Lista de pacientes
+    create_n_edit/         # Form de paciente
+    details/               # Detalhes do paciente
+    recipes/               # Lista + create/edit de receitas
+    requisition/           # Lista + create/edit de requisições
+    recipesPatient/        # Lista (mock) de receitas do paciente
+    requisitionPatient/    # Lista (mock) de requisições do paciente
+  report/                  # Relatórios com filtros e impressão
+  videocall/               # Tela de “vídeo” com chat/controles
+
+components/ui/             # Button, Input, Modal, Card, Autocomplete
+lib/auth/                  # AuthContext e gestão de usuários
+lib/data/                  # Store em localStorage (patients, appointments, recipes, requisitions)
+lib/utils/                 # Validações (CPF, CEP, máscaras)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Fluxo de autenticação
+- Autenticação client-side via `AuthContext` com usuários embutidos e customizados (localStorage).
+- Redirecionamento por role: paciente vai para `/dashboardPatient`, demais para `/dashboard`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Funcionalidades
+- Pacientes: CRUD, máscara/validação (CPF/CEP/telefone), idade e sexo na lista
+- Atendimentos: flag de videoconsulta, integração com tela de videocall
+- Receitas/Requisições: CRUD; páginas “Patient” estáticas para visualização
+- Videocall: layout vertical, chat simulado, volume, mute, placeholders por papel/sexo
+- Relatório: diário/semanal/mensal/período, impressão apenas do conteúdo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tecnologias
+- Next.js (App Router), React 19
+- CSS utilitário (classes Tailwind‑like em globals)
+- localStorage para persistência
+- react-icons (ícones do UI)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Observações
+- O projeto não possui backend real; dados são mockados e gravados no navegador.
