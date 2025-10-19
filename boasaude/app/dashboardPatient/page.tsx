@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/AuthContext";
 
 const mock = [
   { id: 1, title: "Cirurgião - Stephen Strange", date: "2024-04-12T09:00:00Z" },
@@ -15,6 +16,7 @@ const mock = [
 
 export default function DashboardPatientPage() {
   const router = useRouter();
+  const { logout } = useAuth();
   return (
     <div className="min-h-screen p-4 container-responsive">
       <div className="mx-auto max-w-2xl grid gap-3">
@@ -24,6 +26,7 @@ export default function DashboardPatientPage() {
             <Button variant="secondary" onClick={() => router.push('/patients/recipesPatient')}>Receitas</Button>
             <Button variant="secondary" onClick={() => router.push('/patients/examsPatient')}>Exames</Button>
             <Button variant="secondary" onClick={() => router.push('/patients/requisitionPatient')}>Requisições</Button>
+            <Button variant="secondary" onClick={() => { logout(); router.replace('/login'); }}>Sair</Button>
           </div>
         </div>
         <div className="rounded-2xl bg-[#C0C9EE] p-4 grid gap-3">
