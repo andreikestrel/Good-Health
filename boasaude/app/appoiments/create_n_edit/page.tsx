@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { getAppointment, listPatients, saveAppointment } from "@/lib/data/store";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Autocomplete } from "@/components/ui/Autocomplete";
 
-export default function AppointmentFormPage() {
+function AppointmentFormPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -68,6 +68,14 @@ export default function AppointmentFormPage() {
         <button className="text-sm opacity-80" onClick={() => router.back()}>Voltar</button>
       </div>
     </div>
+  );
+}
+
+export default function AppointmentFormPage() {
+  return (
+    <Suspense fallback={null}>
+      <AppointmentFormPageInner />
+    </Suspense>
   );
 }
 

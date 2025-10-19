@@ -46,10 +46,11 @@ export default function VideoCallPage() {
         </div>
           <div className="rounded-2xl bg-[#C0C9EE] p-4 grid gap-4">
           <div className="rounded-xl bg-white/80 p-3 text-black/80 text-center">
-            {typeof window !== 'undefined' && (() => {
+            {(() => {
               try {
-                const u = JSON.parse(window.localStorage.getItem('boasaude.auth.user') || 'null');
-                const doctorFromQuery = new URLSearchParams(window.location.search).get('doctor');
+                const doctorFromQuery = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('doctor') : null;
+                const uRaw = typeof window !== 'undefined' ? window.localStorage.getItem('boasaude.auth.user') : null;
+                const u = uRaw ? JSON.parse(uRaw) : null;
                 if (!u) return 'VideoConsulta';
                 if (u.role === 'profissional' || u.role === 'admin') return `Paciente - ${patientName}`;
                 return u.role === 'paciente' ? (doctorFromQuery || latest?.professionalName || 'Profissional') : 'VideoConsulta';
